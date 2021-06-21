@@ -216,7 +216,6 @@ class A1:
         self.baseCallProcessText.see(END)
         self.baseCallProcessText.update_idletasks()
 
-
     def quitToolkit(self):
         if self.p is None:
             # exit GUI
