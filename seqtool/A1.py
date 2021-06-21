@@ -5,6 +5,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import (askdirectory,askopenfilename,asksaveasfilename)
+from tkinter import scrolledtext
 import os
 import time
 import subprocess
@@ -70,8 +71,7 @@ class A1:
 
         # padx 前置空白， pady 上置空白
         # process text
-        self.baseCallProcessText = Text(self.frame, height=30, width=60, font=("Courier", 14), background="black",
-                                        foreground="white")
+#        self.baseCallProcessText = scrolledtext.ScrolledText(self.frame, height=30, width=60, font=("Courier", 14), background="black",foreground="white")
 
         runButton = Button(self.frame, text="Run", font=("Courier", 16), width=10, height=1, fg="blue",
                            command=(lambda: self.runBasicQC()))
@@ -81,8 +81,8 @@ class A1:
         quitButton.grid(row=20, column=1, pady=5, padx=5, sticky="W")
 
         # process text
-        self.baseCallProcessText = Text(self.frame, height=21, width=81,font=("Courier", 14), background="black", foreground="white")
-        self.baseCallProcessText.grid(row=22, column=0, columnspan=9, padx=5, sticky="W")
+        self.baseCallProcessText = scrolledtext.ScrolledText(self.frame, height=15, width=81,font=("Courier", 14), background="black", foreground="white")
+        self.baseCallProcessText.grid(row=21, column=0, columnspan=9, padx=5, sticky="W")
         self.baseCallProcessText.insert(1.0, "!----Ready----!\n")
 
         # input file text

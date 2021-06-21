@@ -11,7 +11,7 @@ from seqtool.A1 import A1
 
 main = Tk()
 main.title('BasicQC')
-main.geometry('1200x750')
+main.geometry('1200x900')
 
 if __name__ == '__main__':
     # 100 X 50 的 grid
