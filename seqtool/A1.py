@@ -68,7 +68,6 @@ class A1:
 
 
 
-
         # padx 前置空白， pady 上置空白
         # process text
 #        self.baseCallProcessText = scrolledtext.ScrolledText(self.frame, height=30, width=60, font=("Courier", 14), background="black",foreground="white")
