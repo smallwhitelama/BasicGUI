@@ -34,10 +34,12 @@ class A1:
         self.command = None
         self.command2 = None
         self.Checkbutton =None
+        self.Checkbutton_Nanoplot =None
         self.inputDirButton = None
 
         self.dic = {}
         self.var1 = IntVar()
+        self.var2 = IntVar()
     def createTab(self):
         #load list of container
         comm2 = 'docker ps --all --format "{{.Names}}\t{{.Status}}"'
@@ -85,7 +87,7 @@ class A1:
 
         # input file text
         Label(self.frame, text="Input Sequencing Summary file:", font=('Courier', 12)).grid(row=1, column=0, padx=5, pady=5)
-        self.label_inputfile = Text(self.frame, height=1.5, width=50, state="normal", font=("Courier", 16))
+        self.label_inputfile = Text(self.frame, height=2, width=50, state="normal", font=("Courier", 16))
         self.label_inputfile.insert(1.0, "Input Sequencing Summary file")
         self.label_inputfile.configure(state='disabled')  # normal/disabled -> 可編輯/不可編輯
             #input file button
@@ -96,7 +98,7 @@ class A1:
 
     #out file text #要修改
         Label(self.frame, text="Output file:", font=('Courier', 12)).grid(row=2, column=0, padx=5, pady=5)
-        self.label_output = Text(self.frame, height=1.5, width=50, state="normal", font=("Courier", 16))
+        self.label_output = Text(self.frame, height=2, width=50, state="normal", font=("Courier", 16))
         self.label_output.insert(1.0, "Outputfile")
         self.label_output.configure(state='normal')  # normal/disabled -> 可編輯/不可編輯
             #input file button
@@ -110,7 +112,7 @@ class A1:
             checkButton = self.var1.get()
             if checkButton ==1 :
 
-                self.Text_BarcodeFile = Text(self.frame, height=1.5, width=50, state="normal", font=("Courier", 16))
+                self.Text_BarcodeFile = Text(self.frame, height=2, width=50, state="normal", font=("Courier", 16))
                 self.Text_BarcodeFile.configure(state='disabled')
                 self.Text_BarcodeFile.grid(row=4, column=2, columnspan=5, padx=5, sticky="W")
                 #input file button
@@ -124,9 +126,14 @@ class A1:
 
     #check_barcode
         #
-        self.Checkbutton=Checkbutton(self.frame,text= "--Use barcode file",onvalue = 1, offvalue = 0,variable=self.var1, height=1, width=20, state="normal", font=("Courier", 16),command=check_barcode_buttion)
+        self.Checkbutton=Checkbutton(self.frame,text= "--Use barcode file",onvalue = 1, offvalue = 0,variable=self.var1, height=2, width=20, state="normal", font=("Courier", 16),command=check_barcode_buttion)
         self.Checkbutton.grid(row=4, column=0, sticky="W", padx=5, pady=5)
 
+    # check_Nanoplot
+        #
+        self.Checkbutton_Nanoplot = Checkbutton(self.frame, text="--Use Nanoplot    ", onvalue=0, offvalue=1, variable=self.var2,
+                                       height=2, width=20, state="normal", font=("Courier", 16)               )
+        self.Checkbutton_Nanoplot.grid(row=5, column=0, sticky="W", padx=5, pady=5)
     #text_barcode
         #Label(self.frame, text="barcode file (optional):", font=('Courier', 12)).grid(row=4, column=0, padx=5, pady=5)
     #    self.Text_BarcodeFile = Text(self.frame, height=1.5, width=50, state="normal", font=("Courier", 16))
@@ -307,6 +314,8 @@ class A1:
         if not outputFile.endswith('.html'):
             outputFile=outputFile+'html'
         checkButton = self.var1.get()
+
+        checkButton_Nanoplot = self.var2.get()
         f=open(inputFile)
         line1=f.readline()
         line2=f.readline()
@@ -315,7 +324,7 @@ class A1:
         f.close()
 
 
-        print ('checkButton \t{}'.format(checkButton))
+
 
         if checkButton ==0:
             Text_BarcodeFile=''
@@ -331,6 +340,8 @@ class A1:
         print (dockername)
         print (label_flowcell)
         print (label_guppy)
+        print ('checkButton \t{}'.format(checkButton))
+        print('checkButton_Nanoplot \t{}'.format(checkButton_Nanoplot))
 
         w = open('config.yaml', 'w')
         w.write('inputFile:   \"{}\" \n'.format(inputFile.split('/')[-1]))
@@ -371,29 +382,30 @@ class A1:
         self.p=subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,shell=True)
         #self.root.createfilehandler(self.p.stdout, READABLE, self.showStdOut)
 
+        self.baseCallProcessText.insert(END, "Run QCTutorial \n")
+        self.baseCallProcessText.update_idletasks()
+    # Run NanoPlot
+        if checkButton_Nanoplot == 0:
 
-    #    print (self.p.poll())
+            com = "docker exec {}  bash  -c \"/Run/QCTutorial/RunNanoplot.sh\"".format(dockername)
+            self.command2 = com
+            print(com)
+            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                               universal_newlines=True, shell=True)
+
+            self.baseCallProcessText.insert(END, "Run Nanoplot \n")
+            self.baseCallProcessText.update_idletasks()
+
+
+    # wait self.p (RunTutorialQC) finish
         while  self.p.poll() !=0  :
-    #        print (self.p.poll())
+        #    print (self.p.poll())
             print ('Running')
             self.baseCallProcessText.insert(END, "Running....\n")
             self.baseCallProcessText.update_idletasks()
             time.sleep(10)
 
-    # Run NanoPlot
 
-        com = "docker exec {}  bash  -c \"/Run/QCTutorial/RunNanoplot.sh\"".format(dockername)
-        self.command2 = com
-        print(com)
-        self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               universal_newlines=True, shell=True)
-
-        while self.p2.poll() != 0:
-            #        print (self.p.poll())
-            print('Running')
-            self.baseCallProcessText.insert(END, "Running....\n")
-            self.baseCallProcessText.update_idletasks()
-            time.sleep(10)
 
 
         #self.p.wait()
@@ -402,11 +414,6 @@ class A1:
         self.command = "docker cp {}:/Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html {}".format(dockername, outputFile)
         print(self.command)
         self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
-
-        self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot {}_NanoPlot".format(dockername, outputFile.replace('.html',''))
-        print(self.command2)
-        self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
-
 
 
         self.command = "docker exec {} rm /Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html".format(dockername)
@@ -417,9 +424,7 @@ class A1:
         print(self.command)
         self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
-        self.command2 = "docker exec {} rm /Run/QCTutorial/NanoPlot -r".format(dockername)
-        print(self.command2)
-        self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
+
 
 
 
@@ -429,7 +434,30 @@ class A1:
             self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
 
-        self.baseCallProcessText.insert(END, "Finish!!!!\noutputFIle:\t{}\n================\n".format(outputFile))
+
+
+        if checkButton_Nanoplot == 0:
+            # wait self.p2 (RunNanoplot.sh) finish
+            while self.p2.poll() != 0:
+                #        print (self.p.poll())
+                print('Running')
+                self.baseCallProcessText.insert(END, "Running....\n")
+                self.baseCallProcessText.update_idletasks()
+                time.sleep(10)
+
+            self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot {}_NanoPlot".format(dockername,
+                                                                                       outputFile.replace('.html', ''))
+            print(self.command2)
+            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       universal_newlines=True, shell=True)
+
+            self.command2 = "docker exec {} rm /Run/QCTutorial/NanoPlot -r".format(dockername)
+            print(self.command2)
+            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       universal_newlines=True, shell=True)
+            self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
+        self.baseCallProcessText.insert(END, "QCTutorial outputFIle:\t{}\nFinish!!!!\n======================\n".format(outputFile))
+        self.baseCallProcessText.see(END)
         self.baseCallProcessText.update_idletasks()
 
 
