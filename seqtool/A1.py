@@ -11,6 +11,7 @@ import time
 import subprocess
 import tkinter.messagebox
 import pandas as pd
+import shutil
 
 
 class A1:
@@ -367,21 +368,21 @@ class A1:
         w.close()
 
         com = 'docker cp {} {}:/Run/QCTutorial/'.format(inputFile, dockername)
-        print(com)
+    #    print(com)
         subprocess.call(com, shell=True)
 
 
         if Text_BarcodeFile:
             com = 'docker cp {}  {}:/Run/QCTutorial/'.format(Text_BarcodeFile, dockername)
-            print(com)
+    #        print(com)
             subprocess.call(com, shell=True)
 
         com = "docker cp config.yaml {}:/Run/QCTutorial".format(dockername)
-        print(com)
+    #    print(com)
         subprocess.call(com, shell=True)
         com = "docker exec {}  bash -c \"/Run/QCTutorial/RunTutorialQC.sh\"".format(dockername)
         self.command=com
-        print(com)
+    #    print(com)
         #subprocess.call(com, shell=True)
 
         self.p=subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,shell=True)
@@ -394,7 +395,7 @@ class A1:
 
             com = "docker exec {}  bash  -c \"/Run/QCTutorial/RunNanoplot.sh\"".format(dockername)
             self.command2 = com
-            print(com)
+        #    print(com)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                universal_newlines=True, shell=True)
 
@@ -417,16 +418,16 @@ class A1:
 
 
         self.command = "docker cp {}:/Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html {}".format(dockername, outputFile)
-        print(self.command)
+        #print(self.command)
         self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
 
         self.command = "docker exec {} rm /Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html".format(dockername)
-        print(self.command)
+        #print(self.command)
         self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
         self.command = "docker exec {} rm /Run/QCTutorial/{}".format(dockername, inputFile.split('/')[-1])
-        print(self.command)
+        #print(self.command)
         self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
 
@@ -435,7 +436,7 @@ class A1:
 
         if Text_BarcodeFile != inputFile:
             self.command = "docker exec {} rm /Run/QCTutorial/{}".format(dockername, Text_BarcodeFile,inputFile.split('/')[-1])
-            print(self.command)
+            #print(self.command)
             self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
 
@@ -450,14 +451,17 @@ class A1:
                 self.baseCallProcessText.update_idletasks()
                 time.sleep(10)
 
+            if os.path.isdir("{}_NanoPlot".format(outputFile.replace('.html', ''))):
+                shutil.rmtree("{}_NanoPlot".format(outputFile.replace('.html', '')))
+
             self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot {}_NanoPlot".format(dockername,
                                                                                        outputFile.replace('.html', ''))
-            print(self.command2)
+            #print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
 
             self.command2 = "docker exec {} rm /Run/QCTutorial/NanoPlot -r".format(dockername)
-            print(self.command2)
+            #print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
             self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
