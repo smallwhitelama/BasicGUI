@@ -144,16 +144,6 @@ class A1:
     #    inputDirButton.grid(row=4, column=1, sticky="W")
 
 
-
-
-
-
-
-
-
-
-
-
     #label_guppy
         Label(self.frame, text="Guppy Version:",font=('Courier',16)).grid(row=10, column=0, padx=5, pady=5)
         self.label_guppy = Text(self.frame, height=1, width=10, state="normal",font=("Courier", 16))
@@ -185,6 +175,7 @@ class A1:
                     print('open', containerID)
                 else:
                     print('cancel')
+
 
         self.combo = ttk.Combobox(self.frame, values=self.coli,
                                   state="readonly")  # 設定顯示在哪個視窗/設定選單的選項/設定選單中的選項是否能修改或是只能讀取
@@ -301,6 +292,7 @@ class A1:
             ==========================================================
             """)
 
+
         inputFile = self.label_inputfile.get(1.0, END).strip()
         dockername = self.combo.get()
         Text_BarcodeFile =None
@@ -321,7 +313,23 @@ class A1:
         f.close()
 
 
+        print('===')
+        if self.dic[dockername] =='Exited':
 
+            self.mx = tkinter.messagebox.askquestion('Warning',
+                                                         'This container ' + dockername + ' is closed ,do  you want to open it?')
+
+            if self.mx == 'yes':
+                comm = 'docker start {} '.format(dockername)
+                subprocess.getoutput(comm)
+                print('start \t {}'.format(dockername))
+            else:
+                print('cancel')
+                sys.exit()
+
+        #print (self.dic)
+        #print (self.coli)
+        print('===')
 
         if checkButton ==0:
             Text_BarcodeFile=''
@@ -331,14 +339,14 @@ class A1:
             Text_BarcodeFile=inputFile
         #elif self.
         print ('=====')
-        print (inputFile)
-        print (outputFile)
-        print (Text_BarcodeFile)
-        print (dockername)
-        print (label_flowcell)
-        print (label_guppy)
-        print ('checkButton \t{}'.format(checkButton))
-        print('checkButton_Nanoplot \t{}'.format(checkButton_Nanoplot))
+#        print (inputFile)
+#        print (outputFile)
+#        print (Text_BarcodeFile)
+#        print (dockername)
+#        print (label_flowcell)
+#        print (label_guppy)
+#        print ('checkButton \t{}'.format(checkButton))
+#        print('checkButton_Nanoplot \t{}'.format(checkButton_Nanoplot))
 
         w = open('config.yaml', 'w')
         w.write('inputFile:   \"{}\" \n'.format(inputFile.split('/')[-1]))
