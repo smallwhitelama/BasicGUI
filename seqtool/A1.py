@@ -42,7 +42,24 @@ class A1:
         self.dic = {}
         self.var1 = IntVar()
         self.var2 = IntVar()
+
+        self.name=[]
+        self.stats=[]
+
+
     def createTab(self):
+        def docekr_stat(self):
+            comm2 = 'docker ps --all --format \"{{.Names}}\t{{.Status}}\"'
+            trr = subprocess.getoutput(comm2)
+            stats_list = trr.split('\n')
+            #n = 0
+            for i in stats_list:
+                print(i)
+                self.coli.append(i.split('\t')[0])
+                self.stats.append(i.split('\t')[1].split(' ')[0])
+                self.dic.setdefault(i.split('\t')[0], i.split('\t')[1].split(' ')[0])
+
+        """
         #load list of container
         comm2 = 'docker ps --all --format "{{.Names}}\t{{.Status}}"'
         #print(comm2)
@@ -65,8 +82,8 @@ class A1:
                 self.dic.setdefault(i,'Exited')
                 self.coli.append(i)
             n+=1
-
-
+        """
+        docekr_stat(self)
 
 
         # padx 前置空白， pady 上置空白
@@ -174,14 +191,16 @@ class A1:
                     comm = 'docker start ' + containerID + ''
                     subprocess.getoutput(comm)
                     print('open', containerID)
+                    self.dic[containerID]='Up'
                 else:
                     print('cancel')
+            docekr_stat(self)
 
 
         self.combo = ttk.Combobox(self.frame, values=self.coli,
                                   state="readonly")  # 設定顯示在哪個視窗/設定選單的選項/設定選單中的選項是否能修改或是只能讀取
         self.combo.grid(row=0, column=1, sticky="W")  # 調整下拉選單元件的位置
-        self.combo.bind("<<ComboboxSelected>>", bs)  # 偵測選單選項執行函數功能
+#        self.combo.bind("<<ComboboxSelected>>", bs)  # 偵測選單選項執行函數功能
         #print (self.coli)
         # set defult
         if 'basicQC' in self.coli:
@@ -325,6 +344,7 @@ class A1:
                 comm = 'docker start {} '.format(dockername)
                 subprocess.getoutput(comm)
                 print('start \t {}'.format(dockername))
+                self.dic[dockername] = 'Up'
             else:
                 print('cancel')
                 return 0
