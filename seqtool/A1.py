@@ -207,7 +207,6 @@ class A1:
             #set defult
             self.combo.current(self.coli.index('basicQC'))
 
-
  #   def runBaseCall(self):
 
 
