@@ -246,8 +246,9 @@ class A1:
             textObject.configure(state='disabled')
 
             self.label_output.delete(1.0, END)
-            outputName=fileName.split('sequencing_summary_')[1].replace('.txt','')
-            self.label_output.insert(1.0, '{}{}.html'.format(self.dirPath,outputName))
+            if 'sequencing_summary_' in fileName:
+                outputName=fileName.split('sequencing_summary_')[1].replace('.txt','')
+                self.label_output.insert(1.0, '{}{}.html'.format(self.dirPath,outputName))
 
     def selectfile(self, textObject, targetDirectory):
         #print (targetDirectory)  #放的是 要從哪個目錄開始找
@@ -302,7 +303,7 @@ class A1:
         outputFile=self.label_output.get(1.0,END).strip()
         tutorialText="FALSE"
         if not outputFile.endswith('.html'):
-            outputFile=outputFile+'html'
+            outputFile=outputFile+'.html'
         checkButton = self.var1.get()
 
         checkButton_Nanoplot = self.var2.get()
@@ -326,7 +327,7 @@ class A1:
                 print('start \t {}'.format(dockername))
             else:
                 print('cancel')
-                sys.exit()
+                return 0
 
         #print (self.dic)
         #print (self.coli)
@@ -451,17 +452,29 @@ class A1:
                 self.baseCallProcessText.update_idletasks()
                 time.sleep(10)
 
+            if os.path.isdir("/tmp/NanoPlot"):
+                shutil.rmtree("/tmp/NanoPlot")
             if os.path.isdir("{}_NanoPlot".format(outputFile.replace('.html', ''))):
-                shutil.rmtree("{}_NanoPlot".format(outputFile.replace('.html', '')))
+                shutil.rmtree("{}_NanoPlot".format(outputFile.replace('.html', '')))  #rmdir
 
-            self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot {}_NanoPlot".format(dockername,
+            self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot /tmp/NanoPlot".format(dockername,
                                                                                        outputFile.replace('.html', ''))
-            #print(self.command2)
+            print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
 
+
+
+            while self.p2.poll() != 0:
+                #        print (self.p.poll())
+                print('Running')
+                self.baseCallProcessText.insert(END, "Running....\n")
+                self.baseCallProcessText.update_idletasks()
+                time.sleep(10)
+
+
             self.command2 = "docker exec {} rm /Run/QCTutorial/NanoPlot -r".format(dockername)
-            #print(self.command2)
+            print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
             self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
