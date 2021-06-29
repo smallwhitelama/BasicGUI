@@ -14,36 +14,38 @@ import pandas as pd
 import shutil
 
 class A1:
+
     def __init__(self, root, frame):
-        self.root = root
-        self.frame = frame
-        self.label_inputfile = None
-        self.Text_BarcodeFile =None
-        self.label_output = None
-        self.label_guppy = None
-        self.label_flowcell =None
-        self.barcodesCombo = None
-        self.modelCombo = None
-        self.tWindowCombo = None
-        self.baseCallProcessText = None
-        self.p = None
-        self.p2 = None
+        # 設定變數
+        self.root = root            #本體
+        self.frame = frame          #畫面
+        self.label_inputfile = None #顯示input資訊的label
+        self.Text_BarcodeFile =None #存放inputfile的路徑
+        self.label_output = None    #顯示output資訊的label
+        self.label_guppy = None     #存放Guppy版本
+        self.label_flowcell =None   #存放folcell版本
+        #self.barcodesCombo = None
+        #self.modelCombo = None
+        #self.tWindowCombo = None
+        self.baseCallProcessText = None #顯示輸出的黑色區塊
+        self.p = None               #線程變數
+        self.p2 = None              #線程變數
 
-        self.check_barcode=None
-        self.coli = []
-        self.dirPath = None
-        self.command = None
-        self.command2 = None
-        self.Checkbutton =None
-        self.Checkbutton_Nanoplot =None
-        self.inputDirButton = None
+        #self.check_barcode=None
+        self.coli = []              #用來存放container name
+        self.dirPath = None         #放input的資料夾路徑
+        self.command = None         #線程指令變數
+        self.command2 = None        #線程指令變數
+        self.Checkbutton =None      #勾選有沒有要額外使用barcodefile
+        self.Checkbutton_Nanoplot =None     #勾選有沒有要額外使用Nanoplot
+        self.inputDirButton = None  #可以選擇inputfile的按鈕
 
-        self.dic = {}
-        self.var1 = IntVar()
-        self.var2 = IntVar()
+        self.dic = {}               #存放container狀態的字典
+        self.var1 = IntVar()        #判斷有沒有要額外使用barcodefile
+        self.var2 = IntVar()        #判斷有沒有要額外使用Nanoplot
 
-        self.name=[]
-        self.stats=[]
+ #       self.name=[]                #用來存放container name
+ #       self.stats=[]               #用來存放container stats
 
 
     def createTab(self):
@@ -55,7 +57,7 @@ class A1:
             for i in stats_list:
                 print(i)
                 self.coli.append(i.split('\t')[0])
-                self.stats.append(i.split('\t')[1].split(' ')[0])
+#                self.stats.append(i.split('\t')[1].split(' ')[0])
                 self.dic.setdefault(i.split('\t')[0], i.split('\t')[1].split(' ')[0])
 
         """
