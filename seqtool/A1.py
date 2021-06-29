@@ -13,7 +13,6 @@ import tkinter.messagebox
 import pandas as pd
 import shutil
 
-
 class A1:
     def __init__(self, root, frame):
         self.root = root
@@ -331,7 +330,7 @@ class A1:
         line4=f.readline()
         f.close()
 
-
+        #判斷continer有沒有開啟
         print('===')
         if self.dic[dockername] =='Exited':
 
@@ -346,6 +345,14 @@ class A1:
             else:
                 print('cancel')
                 return 0
+        # 判斷有沒有寫的權限
+        outputdir_num=outputFile.rfind('/')
+        output_path=outputFile[:outputdir_num]
+        if not os.access( output_path, os.W_OK)  or  not os.access( '/tmp', os.W_OK):
+            self.mx = tkinter.messagebox.showinfo('Waring' , 'you don\'t have write permission in \n {} \n or \n /tmp'.format(output_path) )
+            return 0
+
+
 
         #print (self.dic)
         #print (self.coli)
@@ -423,14 +430,30 @@ class A1:
 
 
     # wait self.p (RunTutorialQC) finish
-        while  self.p.poll() !=0  :
+        print ('Running')
+        self.baseCallProcessText.insert(END, "Running....\n")
+        self.baseCallProcessText.update_idletasks()
+#        time.sleep(10)
+        stdoutput_p1, erroutput_p1 = self.p.communicate(timeout=600)
+        print('####')
+        print ('RunTutorialQC out:\t {}\n'.format(stdoutput_p1))
+        print ('---')
+        #print('RunTutorialQC error:\t {}\n'.format(erroutput_p1))
+        print('####')
+
+#        while  self.p.poll() !=0  :
         #    print (self.p.poll())
-            print ('Running')
-            self.baseCallProcessText.insert(END, "Running....\n")
-            self.baseCallProcessText.update_idletasks()
-            time.sleep(10)
+#            print ('Running')
+#            self.baseCallProcessText.insert(END, "Running....\n")
+#            self.baseCallProcessText.update_idletasks()
+#            time.sleep(10)
 
-
+        stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
+        print('####')
+        print ('RunNanoplot out:\t {}\n'.format(stdoutput_p2))
+        print ('---')
+        #print('RunNanoplot error:\t {}\n'.format(erroutput_p2))
+        print('####')
 
 
         #self.p.wait()
@@ -475,8 +498,7 @@ class A1:
             if os.path.isdir("{}_NanoPlot".format(outputFile.replace('.html', ''))):
                 shutil.rmtree("{}_NanoPlot".format(outputFile.replace('.html', '')))  #rmdir
 
-            self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot /tmp/NanoPlot".format(dockername,
-                                                                                       outputFile.replace('.html', ''))
+            self.command2 = "docker cp {}:/Run/QCTutorial/NanoPlot /tmp/NanoPlot".format(dockername)
             print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
@@ -489,6 +511,13 @@ class A1:
                 self.baseCallProcessText.insert(END, "Running....\n")
                 self.baseCallProcessText.update_idletasks()
                 time.sleep(10)
+
+
+            self.command2 = "mv /tmp/NanoPlot {}_NanoPlot".format(outputFile.replace('.html', ''))
+            print(self.command2)
+            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       universal_newlines=True, shell=True)
+
 
 
             self.command2 = "docker exec {} rm /Run/QCTutorial/NanoPlot -r".format(dockername)
