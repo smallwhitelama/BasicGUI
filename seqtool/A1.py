@@ -294,21 +294,21 @@ class A1:
 
     def runBasicQC(self):
         print(
-            """
-            # **inputFile** - this should be the sequencing_summary.txt from Guppy etc\n
-            # move your own sequence_summary.txt file (or concatenation thereof) to the\n
-            # RawData folder to run analysis on your own sequence collection\n\n
-            # **barcodeFile** - if Guppy_barcoder has been used to demultiplex library,\n
-            # move the barcoding_summary.txt file to the RawData folder and update variable\n\n
-            # **basecaller** and **flowcellId** - are used for presentation in report\n
-            # please update to correspond to your sequence analysis\n\n
-            # change the **tutorialText** value to FALSE to mask  tutorial instructions(base) \n
+"""
+# **inputFile** - this should be the sequencing_summary.txt from Guppy etc\n
+# move your own sequence_summary.txt file (or concatenation thereof) to the\n
+# RawData folder to run analysis on your own sequence collection\n\n
+# **barcodeFile** - if Guppy_barcoder has been used to demultiplex library,\n
+# move the barcoding_summary.txt file to the RawData folder and update variable\n\n
+# **basecaller** and **flowcellId** - are used for presentation in report\n
+# please update to correspond to your sequence analysis\n\n
+# change the **tutorialText** value to FALSE to mask  tutorial instructions(base) \n
     
-            ===========================================================
-            # -b [barcodeFile]     : \t if you have barcodeFile ,you can use -b option. input barcodeFile
-            # -o [outputFile name] : \t If you want to change the output file name, you cat give output filename. (default:  partial inputFile information)
-            ==========================================================
-            """)
+===========================================================
+# -b [barcodeFile]     : \t if you have barcodeFile ,you can use -b option. input barcodeFile
+# -o [outputFile name] : \t If you want to change the output file name, you cat give output filename. (default:  partial inputFile information)
+==========================================================
+""")
 
 
         inputFile = self.label_inputfile.get(1.0, END).strip()
@@ -331,7 +331,7 @@ class A1:
         f.close()
 
         #判斷continer有沒有開啟
-        print('===')
+        print('=')
         if self.dic[dockername] =='Exited':
 
             self.mx = tkinter.messagebox.askquestion('Warning',
@@ -349,14 +349,14 @@ class A1:
         outputdir_num=outputFile.rfind('/')
         output_path=outputFile[:outputdir_num]
         if not os.access( output_path, os.W_OK)  or  not os.access( '/tmp', os.W_OK):
-            self.mx = tkinter.messagebox.showinfo('Waring' , 'you don\'t have write permission in \n {} \n or \n /tmp'.format(output_path) )
+            self.mx = tkinter.messagebox.showerror('Error' , 'you don\'t have  permission to write in \n[ {} ]\n or \n[ /tmp ]'.format(output_path) )
             return 0
 
 
 
         #print (self.dic)
         #print (self.coli)
-        print('===')
+        print('==')
 
         if checkButton ==0:
             Text_BarcodeFile=''
@@ -365,7 +365,7 @@ class A1:
         if 'barcode_arrangement' in line1 or 'barcode_arrangement' in line2 or 'barcode_arrangement' in line3 or 'barcode_arrangement' in line4:
             Text_BarcodeFile=inputFile
         #elif self.
-        print ('=====')
+        print ('===')
 #        print (inputFile)
 #        print (outputFile)
 #        print (Text_BarcodeFile)
@@ -382,14 +382,14 @@ class A1:
         w.write('flowcellId:  \"{}\" \n'.format(label_flowcell))
         w.write('tutorialText: \"{}\" \n'.format(tutorialText))
         w.write("""\n\n
-        # **inputFile** - this should be the sequencing_summary.txt from Guppy etc\n
-        # move your own sequence_summary.txt file (or concatenation thereof) to the\n
-        # RawData folder to run analysis on your own sequence collection\n\n
-        # **barcodeFile** - if Guppy_barcoder has been used to demultiplex library,\n
-        # move the barcoding_summary.txt file to the RawData folder and update variable\n\n
-        # **basecaller** and **flowcellId** - are used for presentation in report\n
-        # please update to correspond to your sequence analysis\n\n
-        # change the **tutorialText** value to FALSE to mask  tutorial instructions(base) \n
+        # **inputFile** - this should be the sequencing_summary.txt from Guppy etc
+        # move your own sequence_summary.txt file (or concatenation thereof) to the
+        # RawData folder to run analysis on your own sequence collection\n
+        # **barcodeFile** - if Guppy_barcoder has been used to demultiplex library,
+        # move the barcoding_summary.txt file to the RawData folder and update variable\n
+        # **basecaller** and **flowcellId** - are used for presentation in report
+        # please update to correspond to your sequence analysis\n
+        # change the **tutorialText** value to FALSE to mask  tutorial instructions(base) 
         """)
         w.close()
 
@@ -435,11 +435,11 @@ class A1:
         self.baseCallProcessText.update_idletasks()
 #        time.sleep(10)
         stdoutput_p1, erroutput_p1 = self.p.communicate(timeout=600)
-        print('####')
-        print ('RunTutorialQC out:\t {}\n'.format(stdoutput_p1))
-        print ('---')
+        #print('####')
+        #print ('RunTutorialQC out:\t {}\n'.format(stdoutput_p1))
+        #print ('---')
         #print('RunTutorialQC error:\t {}\n'.format(erroutput_p1))
-        print('####')
+        #print('####')
 
 #        while  self.p.poll() !=0  :
         #    print (self.p.poll())
@@ -449,11 +449,11 @@ class A1:
 #            time.sleep(10)
 
         stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
-        print('####')
-        print ('RunNanoplot out:\t {}\n'.format(stdoutput_p2))
-        print ('---')
+        #print('####')
+        #print ('RunNanoplot out:\t {}\n'.format(stdoutput_p2))
+        #print ('---')
         #print('RunNanoplot error:\t {}\n'.format(erroutput_p2))
-        print('####')
+        #print('####')
 
 
         #self.p.wait()
@@ -523,8 +523,19 @@ class A1:
             print(self.command2)
             self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                        universal_newlines=True, shell=True)
-            self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
-        self.baseCallProcessText.insert(END, "QCTutorial outputFIle:\t{}\nFinish!!!!\n======================\n".format(outputFile))
+
+            if 'ERROR:' in stdoutput_p2 :
+                self.baseCallProcessText.insert(END, "###ERROR!!!!\nCan't create NanoPlot outputDir:\nlease check input file.\n\nlogfile_dir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
+            else:
+                self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
+        if 'Nanopore_SumStatQC_Tutorial.html' in stdoutput_p1 :
+            self.baseCallProcessText.insert(END, "QCTutorial outputFIle:\t{}\nFinish!!!!\n======================\n".format(outputFile))
+        elif 'Error' in stdoutput_p1 or 'Execution halted' in stdoutput_p1:
+            self.baseCallProcessText.insert(END,
+                                            "###ERROR!!!!\nCan't create QCTutorial outputFIle:\nPlease check input file.\n======================\n")
+        else:
+            self.baseCallProcessText.insert(END,
+                                            "###ERROR!!!!\nCan't create QCTutorial outputFIle:\nPlease check input file!!!\n======================\n")
         self.baseCallProcessText.see(END)
         self.baseCallProcessText.update_idletasks()
 
