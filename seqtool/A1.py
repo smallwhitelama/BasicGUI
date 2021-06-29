@@ -504,7 +504,6 @@ class A1:
                                        universal_newlines=True, shell=True)
 
 
-
             while self.p2.poll() != 0:
                 #        print (self.p.poll())
                 print('Running')
