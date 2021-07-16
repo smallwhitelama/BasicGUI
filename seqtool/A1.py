@@ -55,7 +55,7 @@ class A1:
             stats_list = trr.split('\n')
             #n = 0
             for i in stats_list:
-                print(i)
+                #print(i)
                 self.coli.append(i.split('\t')[0])
 #                self.stats.append(i.split('\t')[1].split(' ')[0])
                 self.dic.setdefault(i.split('\t')[0], i.split('\t')[1].split(' ')[0])
@@ -418,17 +418,7 @@ class A1:
 
         self.baseCallProcessText.insert(END, "Run QCTutorial \n")
         self.baseCallProcessText.update_idletasks()
-    # Run NanoPlot
-        if checkButton_Nanoplot == 0:
 
-            com = "docker exec {}  bash  -c \"/Run/QCTutorial/RunNanoplot.sh\"".format(dockername)
-            self.command2 = com
-        #    print(com)
-            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               universal_newlines=True, shell=True)
-
-            self.baseCallProcessText.insert(END, "Run Nanoplot \n")
-            self.baseCallProcessText.update_idletasks()
 
 
     # wait self.p (RunTutorialQC) finish
@@ -450,7 +440,22 @@ class A1:
 #            self.baseCallProcessText.update_idletasks()
 #            time.sleep(10)
 
-        stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
+        # Run NanoPlot
+        if checkButton_Nanoplot == 0:
+            com = "docker exec {}  bash  -c \"/Run/QCTutorial/RunNanoplot.sh\"".format(dockername)
+            self.command2 = com
+            #    print(com)
+            self.p2 = subprocess.Popen(self.command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       universal_newlines=True, shell=True)
+
+            self.baseCallProcessText.insert(END, "Run Nanoplot \n")
+            self.baseCallProcessText.update_idletasks()
+
+        #if checkButton_Nanoplot == 0:
+            print('Running_Nanoplot')
+            stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
+            self.baseCallProcessText.insert(END, "Running....Nanoplot\n")
+            self.baseCallProcessText.update_idletasks()
         #print('####')
         #print ('RunNanoplot out:\t {}\n'.format(stdoutput_p2))
         #print ('---')
