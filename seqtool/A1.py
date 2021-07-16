@@ -423,10 +423,15 @@ class A1:
 
     # wait self.p (RunTutorialQC) finish
         print ('Running')
-        self.baseCallProcessText.insert(END, "Running....\n")
+        self.baseCallProcessText.insert(END, "Running....BasicQC\n")
         self.baseCallProcessText.update_idletasks()
 #        time.sleep(10)
-        stdoutput_p1, erroutput_p1 = self.p.communicate(timeout=600)
+        try :
+            stdoutput_p1, erroutput_p1 = self.p.communicate(timeout=600)
+        except self.p.TimeoutExpired:
+            self.baseCallProcessText.insert(END, "BasicQC time out ,please check proxy or inputfile....\n")
+            self.baseCallProcessText.update_idletasks()
+            return 0
         #print('####')
         #print ('RunTutorialQC out:\t {}\n'.format(stdoutput_p1))
         #print ('---')
@@ -453,9 +458,14 @@ class A1:
 
         #if checkButton_Nanoplot == 0:
             print('Running_Nanoplot')
+        try:
             stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
             self.baseCallProcessText.insert(END, "Running....Nanoplot\n")
             self.baseCallProcessText.update_idletasks()
+        except self.p2.TimeoutExpired:
+            self.baseCallProcessText.insert(END, "Nanoplot time out ,please check proxy or inputfile....\n")
+            self.baseCallProcessText.update_idletasks()
+            return 0
         #print('####')
         #print ('RunNanoplot out:\t {}\n'.format(stdoutput_p2))
         #print ('---')
