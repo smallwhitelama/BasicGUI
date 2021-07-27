@@ -49,8 +49,9 @@ class A1:
  #       self.name=[]                #用來存放container name
  #       self.stats=[]               #用來存放container stats
 
-
+    # 建立主體頁面
     def createTab(self):
+        #查詢container狀態
         def docekr_stat(self):
             comm2 = 'docker ps --all --format \"{{.Names}}\t{{.Status}}\"'
             trr = subprocess.getoutput(comm2)
@@ -67,15 +68,18 @@ class A1:
         # padx 前置空白， pady 上置空白
         # process text
 #        self.baseCallProcessText = scrolledtext.ScrolledText(self.frame, height=30, width=60, font=("Courier", 14), background="black",foreground="white")
-
+    # 放UI元件
+        # 執行按鈕
         runButton = Button(self.frame, text="Run", font=("Courier", 16), width=10, height=1, fg="blue",
                            command=(lambda: self.runBasicQC()))
         runButton.grid(row=20, column=0, pady=5, padx=5, sticky="W")
+        # 離開按鈕
         quitButton = Button(self.frame, text="Quit", font=("Courier", 16), width=10, height=1, fg="red",
                             command=(lambda: self.quitToolkit()))
         quitButton.grid(row=20, column=1, pady=5, padx=5, sticky="W")
 
         # process text
+        # #顯示執行狀態
         self.baseCallProcessText = scrolledtext.ScrolledText(self.frame, height=15, width=81,font=("Courier", 14), background="black", foreground="white")
         self.baseCallProcessText.grid(row=21, column=0, columnspan=9, padx=5, sticky="W")
         self.baseCallProcessText.insert(1.0, "!----Ready----!\n")
@@ -91,18 +95,14 @@ class A1:
         inputDirButton.grid(row=1, column=1, sticky="W")
         self.label_inputfile.grid(row=1, column=2, columnspan=5, padx=5, sticky="W")
 
-    #out file text #要修改
+        #out file text
         Label(self.frame, text="Output file:", font=('Courier', 12)).grid(row=2, column=0, padx=5, pady=5)
         self.label_output = Text(self.frame, height=2, width=50, state="normal", font=("Courier", 16))
         self.label_output.insert(1.0, "Outputfile")
         self.label_output.configure(state='normal')  # normal/disabled -> 可編輯/不可編輯
-            #input file button
-    #    outputFileButton = Button(self.frame, text="Browse", font=("Courier", 16), width=12, height=1,
-    #                            command=(lambda: self.selectoutfile(self.label_output, "/")))
-    #    outputFileButton.grid(row=2, column=1, sticky="W")
-
         self.label_output.grid(row=2, column=2, columnspan=5, padx=5, sticky="W")
 
+        # 判斷有沒有要用barcode file
         def check_barcode_buttion():
             checkButton = self.var1.get()
             if checkButton ==1 :
@@ -110,7 +110,7 @@ class A1:
                 self.Text_BarcodeFile = Text(self.frame, height=2, width=50, state="normal", font=("Courier", 16))
                 self.Text_BarcodeFile.configure(state='disabled')
                 self.Text_BarcodeFile.grid(row=4, column=2, columnspan=5, padx=5, sticky="W")
-                #input file button
+                #input file button #如果勾選要使用，就顯示可輸入的欄位
                 self.inputDirButton = Button(self.frame, text="Browse", font=("Courier", 16), width=12, height=1,
                                     command=(lambda: self.selectfile(self.Text_BarcodeFile, "/")))
                 self.inputDirButton.grid(row=4, column=1, sticky="W")
@@ -119,18 +119,18 @@ class A1:
                 self.inputDirButton.grid_remove()
 
 
-    #check_barcode
+    # setup check_barcode
         #
         self.Checkbutton=Checkbutton(self.frame,text= "--Use barcode file",onvalue = 1, offvalue = 0,variable=self.var1, height=2, width=20, state="normal", font=("Courier", 16),command=check_barcode_buttion)
         self.Checkbutton.grid(row=4, column=0, sticky="W", padx=5, pady=5)
 
-    # check_Nanoplot
+    # setup check_Nanoplot
         #
         self.Checkbutton_Nanoplot = Checkbutton(self.frame, text="--Use Nanoplot    ", onvalue=0, offvalue=1, variable=self.var2,
                                        height=2, width=20, state="normal", font=("Courier", 16)               )
         self.Checkbutton_Nanoplot.grid(row=5, column=0, sticky="W", padx=5, pady=5)
 
-    # check_Flongle
+    #setup check_Flongle
         #
         self.Checkbutton_Flongle = Checkbutton(self.frame, text="--Use Flongle    ", onvalue=1, offvalue=0,
                                                 variable=self.var3,
@@ -139,20 +139,20 @@ class A1:
 
 
 
-    #label_guppy
+    #setup label_guppy
         Label(self.frame, text="Guppy Version:",font=('Courier',16)).grid(row=10, column=0, padx=5, pady=5)
         self.label_guppy = Text(self.frame, height=1, width=10, state="normal",font=("Courier", 16))
         self.label_guppy.insert(1.0,"")
         self.label_guppy.grid(row=10,column=1,sticky="W")
 
-    #label_flowcell
+    #setup label_flowcell
         Label(self.frame, text="flowcell name:",font=('Courier',16)).grid(row=11, column=0, padx=5, pady=5)
         self.label_flowcell = Text(self.frame, height=1, width=10, state="normal",font=("Courier", 16))
         self.label_flowcell.insert(1.0,"")
         self.label_flowcell.grid(row=11,column=1,sticky="W")
         #check
 
-    #Container ID
+    #show Container ID & stats
         Label(self.frame, text="Container Name:", font=('Courier', 12)).grid(row=0, column=0, padx=5, pady=5)
 
         def bs(*args):
@@ -179,28 +179,19 @@ class A1:
         self.combo.grid(row=0, column=1, sticky="W")  # 調整下拉選單元件的位置
 #        self.combo.bind("<<ComboboxSelected>>", bs)  # 偵測選單選項執行函數功能
         #print (self.coli)
-        # set defult
+        # set container defult
         if 'basicQC' in self.coli:
             #set defult
             self.combo.current(self.coli.index('basicQC'))
 
- #   def runBaseCall(self):
-
-
-        ##comm = ['/home/saio/saioyan/UB/ME/TEST.py']
-#        self.runBasicQC()
-        # start subprocess
-        ##self.p = subprocess.Popen(comm, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-        # create file stream, conn to file -> p.stdout,  createfilehandler(file, mask, callback)
-        ##self.root.createfilehandler(self.p.stdout, READABLE, self.showStdOut)
-
+    # not use
     def showStdOut(self, pipe, mask):
         oData = os.read(pipe.fileno(), 1 << 20)  # fileno, file descriptor for the stream
 
         self.baseCallProcessText.insert(END, oData.strip(b'\n').decode())
         self.baseCallProcessText.see(END)
         self.baseCallProcessText.update_idletasks()
-
+    # shutdown UI
     def quitToolkit(self):
         if self.p is None:
             # exit GUI
@@ -226,7 +217,7 @@ class A1:
 
         kill_after(countdown=5)
 
-
+    # find function for inputfile
     def selectInputfile(self, textObject, targetDirectory):
         #print (targetDirectory)  #放的是 要從哪個目錄開始找
         fileName = askopenfilename(initialdir=targetDirectory, title="Select Input sequencing_summary")
@@ -243,7 +234,7 @@ class A1:
             if 'sequencing_summary_' in fileName:
                 outputName=fileName.split('sequencing_summary_')[1].replace('.txt','')
                 self.label_output.insert(1.0, '{}{}.html'.format(self.dirPath,outputName))
-
+    # 這上下兩個應該是一樣的,只是我不小心多複製,且都引用了
     def selectfile(self, textObject, targetDirectory):
         #print (targetDirectory)  #放的是 要從哪個目錄開始找
         fileName = askopenfilename(initialdir=targetDirectory, title="Select Input sequencing_summary")
@@ -256,9 +247,7 @@ class A1:
             textObject.insert(1.0, fileName)
             textObject.configure(state='disabled')
 
-
-
-
+    # find function for outputfile
     def selectoutfile(self, textObject, targetDirectory):
         #print (targetDirectory)  #放的是 要從哪個目錄開始找
         outputFileName = asksaveasfilename(initialdir=targetDirectory, title="Select outputfile" )
@@ -269,7 +258,7 @@ class A1:
             textObject.insert(1.0, outputFileName)
             textObject.configure(state='disabled')
 
-
+    # Run function
     def runBasicQC(self):
         print(
 """
@@ -440,6 +429,7 @@ class A1:
 
         #if checkButton_Nanoplot == 0:
             print('Running_Nanoplot')
+        # set timeout
         try:
             stdoutput_p2, erroutput_p2 = self.p2.communicate(timeout=600)
             self.baseCallProcessText.insert(END, "Running....Nanoplot\n")
