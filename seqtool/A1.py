@@ -38,11 +38,13 @@ class A1:
         self.command2 = None        #線程指令變數
         self.Checkbutton =None      #勾選有沒有要額外使用barcodefile
         self.Checkbutton_Nanoplot =None     #勾選有沒有要額外使用Nanoplot
+        self.Checkbutton_Flongle = None  # 勾選是不是用Flongle晶片
         self.inputDirButton = None  #可以選擇inputfile的按鈕
 
         self.dic = {}               #存放container狀態的字典
         self.var1 = IntVar()        #判斷有沒有要額外使用barcodefile
         self.var2 = IntVar()        #判斷有沒有要額外使用Nanoplot
+        self.var3 = IntVar()        # 判斷有沒有要額外使用Flongle
 
  #       self.name=[]                #用來存放container name
  #       self.stats=[]               #用來存放container stats
@@ -60,32 +62,7 @@ class A1:
 #                self.stats.append(i.split('\t')[1].split(' ')[0])
                 self.dic.setdefault(i.split('\t')[0], i.split('\t')[1].split(' ')[0])
 
-        """
-        #load list of container
-        comm2 = 'docker ps --all --format "{{.Names}}\t{{.Status}}"'
-        #print(comm2)
-        strr = subprocess.getoutput(comm2)
-        #print(strr)
-        fw = open('container_list.txt','w')
-        fw.write(strr)
-        fw.close()
-        li = ['Names','Status']
-        df = pd.DataFrame(pd.read_csv('container_list.txt',sep="\t",names=li))
-        #print(df)
-        n = 0
-        for i in df['Names']:
-        #    print(i)
-            value = df['Status'][n]
-            if 'Up' in value:
-                self.dic.setdefault(i,'Up')
-                self.coli.append(i)
-            elif 'Exited' in value:
-                self.dic.setdefault(i,'Exited')
-                self.coli.append(i)
-            n+=1
-        """
         docekr_stat(self)
-
 
         # padx 前置空白， pady 上置空白
         # process text
@@ -152,15 +129,14 @@ class A1:
         self.Checkbutton_Nanoplot = Checkbutton(self.frame, text="--Use Nanoplot    ", onvalue=0, offvalue=1, variable=self.var2,
                                        height=2, width=20, state="normal", font=("Courier", 16)               )
         self.Checkbutton_Nanoplot.grid(row=5, column=0, sticky="W", padx=5, pady=5)
-    #text_barcode
-        #Label(self.frame, text="barcode file (optional):", font=('Courier', 12)).grid(row=4, column=0, padx=5, pady=5)
-    #    self.Text_BarcodeFile = Text(self.frame, height=1.5, width=50, state="normal", font=("Courier", 16))
-    #    self.Text_BarcodeFile.configure(state='disabled')
-    #    self.Text_BarcodeFile.grid(row=4, column=2, columnspan=5, padx=5, sticky="W")
-    #        #input file button
-    #    inputDirButton = Button(self.frame, text="Browse", font=("Courier", 16), width=12, height=1,
-    #                            command=(lambda: self.selectfile(self.Text_BarcodeFile, "/")))
-    #    inputDirButton.grid(row=4, column=1, sticky="W")
+
+    # check_Flongle
+        #
+        self.Checkbutton_Flongle = Checkbutton(self.frame, text="--Use Flongle    ", onvalue=1, offvalue=0,
+                                                variable=self.var3,
+                                                height=2, width=20, state="normal", font=("Courier", 16))
+        self.Checkbutton_Flongle.grid(row=5, column=1, sticky="W", padx=5, pady=5)
+
 
 
     #label_guppy
@@ -325,6 +301,7 @@ class A1:
         checkButton = self.var1.get()
 
         checkButton_Nanoplot = self.var2.get()
+        Checkbutton_Flongle = self.var3.get()
         f=open(inputFile)
         line1=f.readline()
         line2=f.readline()
@@ -391,7 +368,7 @@ class A1:
         # move the barcoding_summary.txt file to the RawData folder and update variable\n
         # **basecaller** and **flowcellId** - are used for presentation in report
         # please update to correspond to your sequence analysis\n
-        # change the **tutorialText** value to FALSE to mask  tutorial instructions(base) 
+        # change the **tutorialText** value to FALSE to mask  tutorial instructions(base)\n 
         """)
         w.close()
 
@@ -408,9 +385,14 @@ class A1:
         com = "docker cp config.yaml {}:/Run/QCTutorial".format(dockername)
     #    print(com)
         subprocess.call(com, shell=True)
-        com = "docker exec {}  bash -c \"/Run/QCTutorial/RunTutorialQC.sh\"".format(dockername)
-        self.command=com
-    #    print(com)
+
+        if Checkbutton_Flongle :
+            com = "docker exec {}  bash -c \"/Run/QCTutorial/RunTutorialQC_flongle.sh\"".format(dockername)
+            self.command=com
+        else:
+            com = "docker exec {}  bash -c \"/Run/QCTutorial/RunTutorialQC.sh\"".format(dockername)
+            self.command=com
+        print(com)
         #subprocess.call(com, shell=True)
 
         self.p=subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,shell=True)
@@ -475,15 +457,24 @@ class A1:
 
         #self.p.wait()
 
+        if Checkbutton_Flongle  :
+            self.command = "docker cp {}:/Run/QCTutorial/Nanopore_SumStatQC_Tutorial_flongle.html {}".format(dockername, outputFile)
+            #print(self.command)
+            self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
-        self.command = "docker cp {}:/Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html {}".format(dockername, outputFile)
-        #print(self.command)
-        self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
+
+            self.command = "docker exec {} rm /Run/QCTutorial/Nanopore_SumStatQC_Tutorial_flongle.html".format(dockername)
+            #print(self.command)
+            self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
+        else:
+            self.command = "docker cp {}:/Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html {}".format(dockername, outputFile)
+            #print(self.command)
+            self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
 
-        self.command = "docker exec {} rm /Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html".format(dockername)
-        #print(self.command)
-        self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
+            self.command = "docker exec {} rm /Run/QCTutorial/Nanopore_SumStatQC_Tutorial.html".format(dockername)
+            #print(self.command)
+            self.p = subprocess.Popen(self.command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True, shell=True)
 
         self.command = "docker exec {} rm /Run/QCTutorial/{}".format(dockername, inputFile.split('/')[-1])
         #print(self.command)
@@ -545,7 +536,7 @@ class A1:
                 self.baseCallProcessText.insert(END, "###ERROR!!!!\nCan't create NanoPlot outputDir:\nlease check input file.\n\nlogfile_dir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
             else:
                 self.baseCallProcessText.insert(END, "NanoPlot outputdir:\t{}_NanoPlot\n".format(outputFile.replace('.html', '')))
-        if 'Nanopore_SumStatQC_Tutorial.html' in stdoutput_p1 :
+        if 'Nanopore_SumStatQC_Tutorial.html' in stdoutput_p1 or 'Nanopore_SumStatQC_Tutorial_flongle.html' in  stdoutput_p1:
             self.baseCallProcessText.insert(END, "QCTutorial outputFIle:\t{}\nFinish!!!!\n======================\n".format(outputFile))
         elif 'Error' in stdoutput_p1 or 'Execution halted' in stdoutput_p1:
             self.baseCallProcessText.insert(END,
